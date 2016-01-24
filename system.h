@@ -5,15 +5,21 @@
 /* TODO Define system operating frequency */
 
 /* Microcontroller MIPs (FCY) */
-#define SYS_FREQ        8000000L
+#define SYS_FREQ        10000000L  // 10 MHz
 #define FCY             SYS_FREQ/4
 
 /******************************************************************************/
 /* System Function Prototypes                                                 */
 /******************************************************************************/
 
-/* Custom oscillator configuration funtions, reset source evaluation
-functions, and other non-peripheral microcontroller initialization functions
-go here. */
+/**
+ * Wait for a given number of seconds using busy waiting scheme.
+ * @param time - time in s to wait.
+ */
+void wait_s(uint16_t time);
 
-void ConfigureOscillator(void); /* Handles clock switching/osc initialization */
+void ADC_acq_delay();
+
+void get_ADC();
+
+signed int r1[128], r2[128], i1[128], i2[128];
