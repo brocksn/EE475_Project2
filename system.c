@@ -36,7 +36,19 @@ void ADC_acq_delay() {
     for( ; time; time--);
 }
 
-void get_ADC() {
+void zero_arrays() {
+    int i;
+    for (i = 0; i < 128; i++) {
+        r1[i] = 0;
+        r2[i] = 0;
+        i1[i] = 0;
+        i2[i] = 0;
+    }
+}
+
+signed int get_ADC() {
+    
+    zero_arrays();
     // 1. Configure A/D module
     ADCON1bits.ADFM = 0x1;      // Result format is left justified
                                 // most significant bits will be read as '0'
@@ -48,19 +60,35 @@ void get_ADC() {
     ADCON0bits.CHS = 0x0;       // Select AN0
     ADCON0bits.ADON = 0x1;      // Power up A/D unit
     int i;
+    //  Use A/C to fill first 128 bit array.
     for (i = 0; i<128; i++) {
-        // 3. Wait acquisition time
+        // 2. Wait acquisition time
         ADC_acq_delay();
-        // 4. Start conversion [set go/done bit]
+        // 3. Start conversion [set go/done bit]
         ADCON0bits.GO_NOT_DONE = 0x1;
-        // 5. Wait for A/D conversion to complete (poll go/done bit)
+        // 4. Wait for A/D conversion to complete (poll go/done bit)
         while (ADCON0bits.GO_NOT_DONE == 0x1) {
         }
-        // 6. Read A/D Result registers (ADRESH/ADRESL);clear bit ADIF if required.
+        // 5. Read A/D Result registers (ADRESH/ADRESL);clear bit ADIF if required.
         r1[i] = ADRESL;
-        r1[i] += ADRESH * 0xFF;
-        
+        r1[i] += ADRESH + 0xFF;
+        r1[i] -= 511;
+    }
+    // Use A/C to fill 2nd 128 bit array
+    for (i = 0; i<128; i++) {
+        // 2. Wait acquisition time
+        ADC_acq_delay();
+        // 3. Start conversion [set go/done bit]
+        ADCON0bits.GO_NOT_DONE = 0x1;
+        // 4. Wait for A/D conversion to complete (poll go/done bit)
+        while (ADCON0bits.GO_NOT_DONE == 0x1) {
+        }
+        // 5. Read A/D Result registers (ADRESH/ADRESL);clear bit ADIF if required.
+        r2[i] = ADRESL;
+        r2[i] +=ADRESH + 0xFF;
+        r2[i] -= 511;
     }
     
-    int x = optfft(r1, r2, i1, i2);
+    // Calculate FFT
+    return optfft(r1, r2, i1, i2);
 }
