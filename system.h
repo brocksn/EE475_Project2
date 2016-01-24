@@ -18,8 +18,10 @@
  */
 void wait_s(uint16_t time);
 
+void zero_array(signed int *array, int length);
+
 void ADC_acq_delay();
 
-void get_ADC();
+signed int get_ADC();
 
 signed int r1[128], r2[128], i1[128], i2[128];
