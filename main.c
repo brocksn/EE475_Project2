@@ -36,14 +36,13 @@
 
 void main(void)
 {
-    /* TODO <INSERT USER APPLICATION CODE HERE> */
-    signed int real1[128], real2[128], imag1[128], imag2[128];
-    
-    
-    
+    initialize();  
+    signed int x;
     while(1)
     {
-        
+        x = get_ADC();
+        x &= 0xFF;
+        LATC = x;
     }
 
 }
