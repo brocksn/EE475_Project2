@@ -1,5 +1,5 @@
 /* 256 bytes */
-const signed char u1[] = {
+static const signed int u1[] = {
  32,
  32,
   0,
@@ -258,7 +258,7 @@ const signed char u1[] = {
 };
 
 /* 256 bytes */
-const signed char u2[] = {
+static const signed int u2[] = {
   0,
   0,
 -32,
@@ -516,8 +516,8 @@ const signed char u2[] = {
   0
 };
 
-/* 256 bytes */
-const unsigned char square1[] = {
+/* 512 bytes */
+static const unsigned char square[] = {
 	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,
 	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,
 	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,
@@ -549,11 +549,7 @@ const unsigned char square1[] = {
 	   49,	   49,	   49,	   50,	   50,	   51,	   51,	   52,
 	   52,	   53,	   53,	   53,	   54,	   54,	   55,	   55,
 	   56,	   56,	   57,	   57,	   58,	   58,	   59,	   59,
-	   60,	   60,	   61,	   61,	   62,	   62,	   63,	   63
-};
-
-/* 256 bytes */
-const unsigned char square2[] = {
+	   60,	   60,	   61,	   61,	   62,	   62,	   63,	   63,
 	   64,	   64,	   65,	   65,	   66,	   66,	   67,	   67,
 	   68,	   68,	   69,	   69,	   70,	   70,	   71,	   71,
 	   72,	   72,	   73,	   73,	   74,	   74,	   75,	   76,
