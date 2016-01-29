@@ -23,5 +23,3 @@ void zero_array(signed int *array, int length);
 void ADC_acq_delay();
 
 signed int get_ADC();
-
-signed int r1[128], r2[128], i1[128], i2[128];
