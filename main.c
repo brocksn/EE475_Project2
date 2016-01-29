@@ -41,7 +41,6 @@ void main(void)
     while(1)
     {
         x = get_ADC();
-        x &= 0xFF;
         LATC = x;
     }
 
