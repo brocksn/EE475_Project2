@@ -20,6 +20,11 @@
 #include "system.h"
 #include "optfft.h"
 
+#define _XTAL_FREQ 20000000
+
+static signed int re[256]; 
+static signed int im[256];
+
 /**
  * Wait for a given number of seconds using busy waiting scheme.
  * @param time - time in s to wait.
@@ -32,17 +37,14 @@ void wait_s(uint16_t time)
 }
 
 void ADC_acq_delay() {
-    static long time = 13; // 13 microsecond delay
-    for( ; time; time--);
+        __delay_us(20);
 }
 
 void zero_arrays() {
     int i;
-    for (i = 0; i < 128; i++) {
-        r1[i] = 0;
-        r2[i] = 0;
-        i1[i] = 0;
-        i2[i] = 0;
+    for (i = 0; i < 256; i++) {
+        re[i] = 0;
+        im[i] = 0;
     }
 }
 
@@ -59,9 +61,9 @@ signed int get_ADC() {
                                 // V-REF+ is VDD and V-REF- is VSS
     ADCON0bits.CHS = 0x0;       // Select AN0
     ADCON0bits.ADON = 0x1;      // Power up A/D unit
-    int i;
+    int j;
     //  Use A/C to fill first 128 bit array.
-    for (i = 0; i<128; i++) {
+    for (j = 0; j<256; j++) {
         // 2. Wait acquisition time
         ADC_acq_delay();
         // 3. Start conversion [set go/done bit]
@@ -70,25 +72,11 @@ signed int get_ADC() {
         while (ADCON0bits.GO_NOT_DONE == 0x1) {
         }
         // 5. Read A/D Result registers (ADRESH/ADRESL);clear bit ADIF if required.
-        r1[i] = ADRESL;
-        r1[i] += ADRESH + 0xFF;
-        r1[i] -= 511;
-    }
-    // Use A/C to fill 2nd 128 bit array
-    for (i = 0; i<128; i++) {
-        // 2. Wait acquisition time
-        ADC_acq_delay();
-        // 3. Start conversion [set go/done bit]
-        ADCON0bits.GO_NOT_DONE = 0x1;
-        // 4. Wait for A/D conversion to complete (poll go/done bit)
-        while (ADCON0bits.GO_NOT_DONE == 0x1) {
-        }
-        // 5. Read A/D Result registers (ADRESH/ADRESL);clear bit ADIF if required.
-        r2[i] = ADRESL;
-        r2[i] +=ADRESH + 0xFF;
-        r2[i] -= 511;
+        re[j] = ADRESL;
+        re[j] += ADRESH + 0xFF;
+        re[j] -= 511;
     }
     
     // Calculate FFT
-    return optfft(r1, r2, i1, i2);
+    return (optfft(re, im) * 512) / 50000;
 }
