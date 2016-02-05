@@ -22,61 +22,50 @@
 
 #define _XTAL_FREQ 20000000
 
-static signed int re[256]; 
-static signed int im[256];
 
-/**
- * Wait for a given number of seconds using busy waiting scheme.
- * @param time - time in s to wait.
- */
-void wait_s(uint16_t time)
-{
-    static long timel = 0;
-    timel = time * 100000l;
-    for( ; timel; timel--);// no initial condition, while time is >0, decrement time each loop
+
+void read() {
+    while (!SSPSTATbits.BF);
+    read_slave_address();
+    read_mode();
+    read_duration();
+    read_historical();
 }
 
-void ADC_acq_delay() {
-        __delay_us(20);
+void read_slave_address() {
+    slave_address = (SSPBUF >> 5) & 0x7;
 }
 
-void zero_arrays() {
-    int i;
-    for (i = 0; i < 256; i++) {
-        re[i] = 0;
-        im[i] = 0;
+void read_mode() {
+    mode = SSPBUF & 0x7;
+}
+
+void read_duration() {
+    window = (SSPBUF >> 4) & 0x1;
+}
+
+void read_historical() {
+    hist = (SSPBUF >> 3) & 0x1;
+}
+
+void transmit_data() {
+    unsigned long data = (unsigned long) slave_address;
+    data += ((unsigned long) window) * 10 ;
+    data += ((unsigned long) mode) * 100;  
+    char dump;
+    if (SSPSTATbits.BF) {
+        dump = SSPBUF;
     }
-}
-
-signed int get_ADC() {
-    
-    zero_arrays();
-    // 1. Configure A/D module
-    ADCON1bits.ADFM = 0x1;      // Result format is left justified
-                                // most significant bits will be read as '0'
-    ADCON0bits.ADCS = 0x2;      // A/D clock conversion set to F-OSC/32
-    ADCON1bits.ADCS2 = 0x0;     // this allows sufficient setup time for the A/D
-    
-    ADCON1bits.PCFG = 0x0;      // A/D ports all configured as analog
-                                // V-REF+ is VDD and V-REF- is VSS
-    ADCON0bits.CHS = 0x0;       // Select AN0
-    ADCON0bits.ADON = 0x1;      // Power up A/D unit
-    int j;
-    //  Use A/C to fill first 128 bit array.
-    for (j = 0; j<256; j++) {
-        // 2. Wait acquisition time
-        ADC_acq_delay();
-        // 3. Start conversion [set go/done bit]
-        ADCON0bits.GO_NOT_DONE = 0x1;
-        // 4. Wait for A/D conversion to complete (poll go/done bit)
-        while (ADCON0bits.GO_NOT_DONE == 0x1) {
-        }
-        // 5. Read A/D Result registers (ADRESH/ADRESL);clear bit ADIF if required.
-        re[j] = ADRESL;
-        re[j] += ADRESH + 0xFF;
-        re[j] -= 511;
-    }
-    
-    // Calculate FFT
-    return (optfft(re, im) * 512) / 50000;
+    SSPBUF = 0xFF & data;
+    SSPCON1bits.WCOL = 0x1;
+    while (SSPCON1bits.WCOL);
+    SSPBUF = (data << 8) & 0xFF;
+    SSPCON1bits.WCOL = 0x1;
+    while (SSPCON1bits.WCOL);
+    SSPBUF = (data << 16) & 0xFF;
+    SSPCON1bits.WCOL = 0x1;
+    while (SSPCON1bits.WCOL);
+    SSPBUF = (data << 24) & 0xFF;
+    SSPCON1bits.WCOL = 0x1;
+    while (SSPCON1bits.WCOL);
 }
