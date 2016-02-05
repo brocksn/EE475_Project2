@@ -8,18 +8,19 @@
 #define SYS_FREQ        10000000L  // 10 MHz
 #define FCY             SYS_FREQ/4
 
+
+char slave_address;
+char mode;
+bit window;    // low 10ms, high 1s
+bit hist;
 /******************************************************************************/
 /* System Function Prototypes                                                 */
 /******************************************************************************/
 
-/**
- * Wait for a given number of seconds using busy waiting scheme.
- * @param time - time in s to wait.
- */
-void wait_s(uint16_t time);
+void read_slave_address();
+void read();
+void read_mode();
+void read_duration();
+void read_historical();
+void transmit_data();
 
-void zero_array(signed int *array, int length);
-
-void ADC_acq_delay();
-
-signed int get_ADC();
