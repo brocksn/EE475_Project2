@@ -59,15 +59,25 @@ void main(void)
     initialize();
     
     while(1) {
-        read();
-        if (hist) { // transmit data 16x
-            int i;
-            for (i = 0; i<16; i++) {
-                transmit_data();
-            }
-        } else {
+        //if (1) {
+          //  read();
+        //}
+        if (SSPSTATbits.BF) {
+            read();
             transmit_data();
         }
+        
+         
+            /*
+            if (hist) { // transmit data 16x
+                int i;
+                for (i = 0; i<16; i++) {
+                    transmit_data();
+                }
+            } else {
+                transmit_data();
+            }
+             */
     }
 }
 
