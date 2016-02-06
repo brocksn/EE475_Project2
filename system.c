@@ -74,14 +74,12 @@ void transmit_data() {
         SSPBUF = 0xFF;
     } else {
         SSPBUF = 0xFF & data;
-        SSPCON1bits.WCOL = 1;
         if (hist) {
             int i;
             for (i=0; i < 15; i++) {
                 data += 1;
-                while (SSPCON1bits.WCOL);
-                SSPBUF = 0xFF & data;
-                SSPCON1bits.WCOL = 1;
+                while(!SSPSTATbits.BF);
+                SSPBUF = 0xFF & (data);
             }
         }
     }
