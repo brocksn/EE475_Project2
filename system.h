@@ -17,10 +17,10 @@ bit hist;
 /* System Function Prototypes                                                 */
 /******************************************************************************/
 
-void read_slave_address();
+void read_slave_address(char buf);
 void read();
-void read_mode();
-void read_duration();
-void read_historical();
+void read_mode(char buf);
+void read_duration(char buf);
+void read_historical(char buf);
 void transmit_data();
 
