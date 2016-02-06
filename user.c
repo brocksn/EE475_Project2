@@ -24,12 +24,15 @@
 /******************************************************************************/
 
 void initialize() {
-    SSPSTATbits.SMP = 0;
-    SSPSTATbits.CKE = 1;
-    SSPCON1bits.SSPEN = 1;
-    SSPCON1bits.CKP = 0;
-    SSPCON1bits.SSPM = 0x4;
+    TRISC = 0x00;
+    TRISCbits.TRISC3 = 0x1;
+    TRISCbits.TRISC4 = 0x1;
+    SSPCON1bits.SSPEN = 0x0;
+    SSPSTATbits.SMP = 0x0;
+    SSPSTATbits.CKE = 0x1;
+    SSPCON1bits.CKP = 0x0;
+    SSPCON1bits.SSPM = 0x5;
+    SSPCON1bits.SSPEN = 0x1;
     
-    
-    
+    TRISD = 0x00;
 }
